@@ -4,3 +4,5 @@ RubricaApi/obj/Debug/net10.0/RubricaApi.assets.cache
 RubricaApi/obj/Debug/net10.0/RubricaApi.csproj.AssemblyReference.cache
 RubricaApi/obj/Debug/net10.0/RubricaApi.GeneratedMSBuildEditorConfig.editorconfig
 .gitignore
+RubricaApi/obj/
+RubricaApi/bin/
