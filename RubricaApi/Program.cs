@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using RubricaApi.Model;
+using RubricaApi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,8 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-builder.Services.AddDbContext<RubricaContext>(opt => opt.UseInMemoryDatabase("RubricaList"));
-
+//builder.Services.AddDbContext<RubricaContext>(opt => opt.UseInMemoryDatabase("RubricaList"));
+builder.Services.AddDbContext<RubricaContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
