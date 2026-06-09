@@ -12,6 +12,20 @@ builder.Services.AddDbContext<RubricaContext>(opt => opt.UseInMemoryDatabase("Ru
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<RubricaContext>();
+    try
+    {
+        db.Database.CanConnect(); // restituisce true/false
+        Console.WriteLine("✅ Connessione OK");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Errore: {ex.Message}");
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -25,3 +39,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
