@@ -62,7 +62,7 @@ namespace RubricaApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!FamigliareExists(contattoId))
+                if (!FamigliareExists(contattoId, famigliareId))
                 {
                     return NotFound();
                 }
@@ -87,7 +87,7 @@ namespace RubricaApi.Controllers
             }
             catch (DbUpdateException)
             {
-                if (FamigliareExists(famigliare.ContattoId))
+                if (FamigliareExists(famigliare.ContattoId, famigliare.FamigliareId))
                 {
                     return Conflict();
                 }
@@ -97,7 +97,7 @@ namespace RubricaApi.Controllers
                 }
             }
 
-            return CreatedAtAction("GetFamigliare", new { id = famigliare.ContattoId }, famigliare);
+            return CreatedAtAction("GetFamigliare", new { contattoId = famigliare.ContattoId, famigliareId = famigliare.FamigliareId }, famigliare);
         }
 
         // DELETE: api/Famigliari/5
@@ -116,9 +116,9 @@ namespace RubricaApi.Controllers
             return NoContent();
         }
 
-        private bool FamigliareExists(int contattoId)
+        private bool FamigliareExists(int contattoId, int famigliareId)
         {
-            return _context.Famigliari.Any(e => e.ContattoId == contattoId);
+            return _context.Famigliari.Any(e => e.ContattoId == contattoId && e.FamigliareId == famigliareId);
         }
     }
 }

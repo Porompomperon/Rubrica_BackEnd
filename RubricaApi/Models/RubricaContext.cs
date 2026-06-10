@@ -13,6 +13,10 @@ public class RubricaContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+       modelBuilder.Entity<Famigliare>()
+            .Property(f => f.Id)
+            .ValueGeneratedOnAdd();
+            
         modelBuilder.Entity<Famigliare>()
             .HasKey(f => new { f.ContattoId, f.FamigliareId });
 
