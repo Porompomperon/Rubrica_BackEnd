@@ -10,21 +10,20 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 //builder.Services.AddDbContext<RubricaContext>(opt => opt.UseInMemoryDatabase("RubricaList"));
 builder.Services.AddDbContext<RubricaContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+//per consentire le richieste da Angular, che è in esecuzione su un dominio diverso (CORS)
+builder.Services.AddCors(options =>
 {
-    var db = scope.ServiceProvider.GetRequiredService<RubricaContext>();
-    try
+    options.AddPolicy("LanPolicy", policy =>
     {
-        db.Database.CanConnect(); // restituisce true/false
-        Console.WriteLine("✅ Connessione OK");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"❌ Errore: {ex.Message}");
-    }
-}
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -33,6 +32,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+//per consentire le richieste da Angular, che è in esecuzione su un dominio diverso (CORS)
+app.UseCors("LanPolicy");
 
 app.UseAuthorization();
 
