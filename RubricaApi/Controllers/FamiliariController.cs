@@ -22,12 +22,11 @@ namespace RubricaApi.Controllers
         }
 
         // GET: api/Familiari
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Familiare>>> GetFamiliari()
+        [HttpGet("{contattoId}")]
+        public async Task<ActionResult<IEnumerable<Familiare>>> GetFamiliari(long contattoId)
         {
             return await _context.Familiari.ToListAsync();
         }
-
         // GET: api/Familiari/5
         [HttpGet("{contattoId}/{familiareId}")]
         public async Task<ActionResult<Familiare>> GetFamiliare(long contattoId, long familiareId)
