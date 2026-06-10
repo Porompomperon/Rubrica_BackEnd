@@ -9,23 +9,27 @@ public class RubricaContext : DbContext
         : base(options) { }
 
     public DbSet<Contatto> Contatti { get; set; } = null!;
-    public DbSet<Familiare> Familiari { get; set; } = null!;
+    public DbSet<Famigliare> Famigliari { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Familiare>()
-            .HasKey(f => new { f.ContattoId, f.FamiliareId });
+       modelBuilder.Entity<Famigliare>()
+            .Property(f => f.Id)
+            .ValueGeneratedOnAdd();
+            
+        modelBuilder.Entity<Famigliare>()
+            .HasKey(f => new { f.ContattoId, f.FamigliareId });
 
-        modelBuilder.Entity<Familiare>()
+        modelBuilder.Entity<Famigliare>()
             .HasOne<Contatto>()
             .WithMany()
             .HasForeignKey(f => f.ContattoId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<Familiare>()
+        modelBuilder.Entity<Famigliare>()
             .HasOne<Contatto>()
             .WithMany()
-            .HasForeignKey(f => f.FamiliareId)
+            .HasForeignKey(f => f.FamigliareId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

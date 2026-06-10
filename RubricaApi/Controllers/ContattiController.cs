@@ -30,7 +30,7 @@ namespace RubricaApi.Controllers
 
         // GET: api/Contatti/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Contatto>> GetContatto(long id)
+        public async Task<ActionResult<Contatto>> GetContatto(int id)
         {
             var contatto = await _context.Contatti.FindAsync(id);
 
@@ -45,7 +45,7 @@ namespace RubricaApi.Controllers
         // PUT: api/Contatti/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutContatto(long id, Contatto contatto)
+        public async Task<IActionResult> PutContatto(int id, Contatto contatto)
         {
             if (id != contatto.Id)
             {
@@ -86,7 +86,7 @@ namespace RubricaApi.Controllers
 
         // DELETE: api/Contatti/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteContatto(long id)
+        public async Task<IActionResult> DeleteContatto(int id)
         {
             var contatto = await _context.Contatti.FindAsync(id);
             if (contatto == null)
@@ -100,7 +100,7 @@ namespace RubricaApi.Controllers
             return NoContent();
         }
 
-        private bool ContattoExists(long id)
+        private bool ContattoExists(int id)
         {
             return _context.Contatti.Any(e => e.Id == id);
         }
