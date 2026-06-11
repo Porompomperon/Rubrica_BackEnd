@@ -94,6 +94,12 @@ namespace RubricaApi.Controllers
                 return NotFound();
             }
 
+            var famigliari = await _context.Famigliari
+                .Where(f => f.ContattoId == id || f.FamigliareId == id)
+                .ToListAsync();
+
+            _context.Famigliari.RemoveRange(famigliari);
+
             _context.Contatti.Remove(contatto);
             await _context.SaveChangesAsync();
 
