@@ -21,7 +21,7 @@ namespace RubricaApi.Controllers
             _context = context;
         }
 
-        // GET: api/Famigliari
+        // GET: api/Famigliari/5
         [HttpGet("{contattoId}")]
         public async Task<ActionResult<IEnumerable<Famigliare>>> GetFamigliari(int contattoId)
         {
@@ -30,7 +30,7 @@ namespace RubricaApi.Controllers
                 .ToListAsync();
         }
 
-        // GET: api/Famigliari/5
+        // GET: api/Famigliari/5/3
         [HttpGet("{contattoId}/{famigliareId}")]
         public async Task<ActionResult<Famigliare>> GetFamigliare(int contattoId, int famigliareId)
         {
