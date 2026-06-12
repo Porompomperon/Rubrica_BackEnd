@@ -10,6 +10,7 @@ public class RubricaContext : DbContext
 
     public DbSet<Contatto> Contatti { get; set; } = null!;
     public DbSet<Famigliare> Famigliari { get; set; } = null!;
+    public DbSet<Utente> Utenti { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

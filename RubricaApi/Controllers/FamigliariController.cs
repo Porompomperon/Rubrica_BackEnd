@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RubricaApi.Data;
 using RubricaApi.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RubricaApi.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class FamigliariController : ControllerBase
@@ -34,7 +36,7 @@ namespace RubricaApi.Controllers
         [HttpGet("{contattoId}/{famigliareId}")]
         public async Task<ActionResult<Famigliare>> GetFamigliare(int contattoId, int famigliareId)
         {
-            var famigliare = await _context.Famigliari.FindAsync(contattoId,famigliareId);
+            var famigliare = await _context.Famigliari.FindAsync(contattoId, famigliareId);
 
             if (famigliare == null)
             {

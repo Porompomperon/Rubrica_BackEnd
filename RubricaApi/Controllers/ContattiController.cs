@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RubricaApi.Data;
 using RubricaApi.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RubricaApi.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ContattiController : ControllerBase
