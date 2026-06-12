@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace RubricaApi.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ContattiController : ControllerBase

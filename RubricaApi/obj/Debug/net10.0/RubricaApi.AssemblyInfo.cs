@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("09539914-62c7-48b7-a665-22668db9342f")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("RubricaApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ce0d55bbc824b33f2f74497817f81e4234671cc3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d56f6c27de831b65efb964287e53a4b041151395")]
 [assembly: System.Reflection.AssemblyProductAttribute("RubricaApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RubricaApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

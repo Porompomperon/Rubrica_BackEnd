@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace RubricaApi.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class FamigliariController : ControllerBase
@@ -25,25 +25,37 @@ namespace RubricaApi.Controllers
 
         // GET: api/Famigliari/5
         [HttpGet("{contattoId}")]
-        public async Task<ActionResult<IEnumerable<Famigliare>>> GetFamigliari(int contattoId)
+        public async Task<ActionResult<IEnumerable<Contatto>>> GetFamigliari(int contattoId)
         {
-            return await _context.Famigliari
+            var famigliari = await _context.Famigliari
                 .Where(f => f.ContattoId == contattoId)
+                .Join(
+                    _context.Contatti,
+                    f => f.FamigliareId,
+                    c => c.Id,
+                    (f, c) => c
+                )
                 .ToListAsync();
+
+            return Ok(famigliari);
         }
 
         // GET: api/Famigliari/5/3
         [HttpGet("{contattoId}/{famigliareId}")]
-        public async Task<ActionResult<Famigliare>> GetFamigliare(int contattoId, int famigliareId)
+        public async Task<ActionResult<Contatto>> GetFamigliare(int contattoId, int famigliareId)
         {
-            var famigliare = await _context.Famigliari.FindAsync(contattoId, famigliareId);
+            var esiste = await _context.Famigliari
+                .AnyAsync(f => f.ContattoId == contattoId && f.FamigliareId == famigliareId);
 
-            if (famigliare == null)
-            {
+            if (!esiste)
                 return NotFound();
-            }
 
-            return famigliare;
+            var contatto = await _context.Contatti.FindAsync(famigliareId);
+
+            if (contatto == null)
+                return NotFound();
+
+            return Ok(contatto);
         }
 
         // PUT: api/Famigliari/5

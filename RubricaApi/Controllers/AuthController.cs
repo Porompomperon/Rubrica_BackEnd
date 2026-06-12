@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using RubricaApi.Data;
 using Microsoft.AspNetCore.Authorization;
 using RubricaApi.Models;
+using System.Security.Claims;
 
 namespace RubricaApi.Controllers
 {
@@ -56,29 +57,42 @@ namespace RubricaApi.Controllers
             var accessToken = tokenService.GenerateAccessToken(utente.Username);
             var refreshToken = tokenService.GenerateRefreshToken();
 
-            // Salva il refresh token nel DB
             utente.RefreshToken = refreshToken;
             utente.RefreshTokenExpiry = DateTime.UtcNow.AddDays(
                 int.Parse(config["Jwt:RefreshTokenExpiresDays"]!)
             );
             await db.SaveChangesAsync();
 
+            // Refresh token nel cookie HttpOnly
+            Response.Cookies.Append("refreshtoken", refreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                //Test in locale, in produzione va messo a true e SameSite a None
+                Secure = false,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.UtcNow.AddDays(
+                    int.Parse(config["Jwt:RefreshTokenExpiresDays"]!)
+                )
+            });
+
             return Ok(new
             {
-                access_token = accessToken,
-                token_type = "Bearer",
-                expires_in = int.Parse(config["Jwt:AccessTokenExpiresMinutes"]!) * 60,
-                refresh_token = refreshToken
+                accessToken = accessToken
             });
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh([FromBody] RefreshRequest request)
+        public async Task<IActionResult> Refresh()
         {
-            var utente = await db.Utenti
-                .FirstOrDefaultAsync(u => u.RefreshToken == request.RefreshToken);
+            // Legge il refresh token dal cookie HttpOnly
+            var refreshToken = Request.Cookies["refreshToken"];
 
-            // Token non trovato, già usato, o scaduto
+            if (string.IsNullOrEmpty(refreshToken))
+                return Unauthorized(new { error = "Refresh token mancante" });
+
+            var utente = await db.Utenti
+                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+
             if (utente == null || utente.RefreshTokenExpiry < DateTime.UtcNow)
                 return Unauthorized(new { error = "Refresh token non valido o scaduto" });
 
@@ -91,12 +105,21 @@ namespace RubricaApi.Controllers
             );
             await db.SaveChangesAsync();
 
+            // Rispedisce il nuovo refresh token come cookie HttpOnly
+            Response.Cookies.Append("refresh_token", newRefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                //Test in locale, in produzione va messo a true e SameSite a None
+                Secure = false,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.UtcNow.AddDays(
+                    int.Parse(config["Jwt:RefreshTokenExpiresDays"]!)
+                )
+            });
+
             return Ok(new
             {
-                access_token = newAccessToken,
-                token_type = "Bearer",
-                expires_in = int.Parse(config["Jwt:AccessTokenExpiresMinutes"]!) * 60,
-                refresh_token = newRefreshToken
+                accessToken = newAccessToken
             });
         }
 
@@ -104,18 +127,23 @@ namespace RubricaApi.Controllers
         [Authorize]
         public async Task<IActionResult> Logout()
         {
-            var username = User.Identity?.Name;
+            var username = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (username == null)
+                return Unauthorized(new { message = "Claim utente non trovato nel token" });
+
             var utente = await db.Utenti.FirstOrDefaultAsync(u => u.Username == username);
 
-            if (utente != null)
-            {
-                utente.RefreshToken = null;
-                utente.RefreshTokenExpiry = null;
-                await db.SaveChangesAsync();
-            }
+            if (utente == null)
+                return NotFound(new { message = "Utente non trovato" });
 
-            return NoContent();
+            utente.RefreshToken = null;
+            utente.RefreshTokenExpiry = null;
+            await db.SaveChangesAsync();
+
+            return Ok(new { message = "Logout effettuato" });
         }
+
     }
 
     public record AuthRequest(string Username, string Password);

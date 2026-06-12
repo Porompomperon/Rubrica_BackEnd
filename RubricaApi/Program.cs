@@ -52,13 +52,27 @@ builder.Services.AddCors(options =>
     options.AddPolicy("LanPolicy", policy =>
     {
         policy
-            .AllowAnyOrigin()
+            .WithOrigins("http://localhost:4200")
+            //.AllowAnyOrigin()
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials(); //per permettere l'invio dei cookie, necessario per il refresh token
     });
 });
 
 builder.Services.AddScoped<TokenService>();
+
+//test da eliminare
+builder.Services.AddSingleton<CookieOptions>(sp =>
+{
+    var env = sp.GetRequiredService<IWebHostEnvironment>();
+    return new CookieOptions
+    {
+        HttpOnly = true,
+        Secure = !env.IsDevelopment(), // false in dev, true in prod
+        SameSite = SameSiteMode.None,
+    };
+});
 
 var app = builder.Build();
 
